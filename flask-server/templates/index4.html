@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Image Capture</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            /* Set the background image */
+            background-image: url('kalpana/static/vision.jpg');
+            /* Adjust background image properties as needed */
+            background-size: cover;
+            /* Cover the entire viewport */
+            background-position: center;
+            /* Center the background image */
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Click anywhere to capture an image</h1>
+    <p id="description"></p>
+    <img id="captured-image" src="#" alt="Captured Image"> <!-- Image element to display the captured image -->
+
+    <script>
+        document.addEventListener('click', function () {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        document.getElementById('description').textContent = 'Description: ' + response.description;
+                        // Call text-to-speech function
+                        textToSpeech(response.description);
+                        // Set the captured image source
+                        document.getElementById('captured-image').src = response.image_url;
+                    } else {
+                        console.error('Failed to capture image:', xhr.responseText);
+                    }
+                }
+            };
+            xhr.open('POST', '/capture'); // Change the method to POST
+            xhr.send();
+        });
+
+        // Function to convert text to speech
+        function textToSpeech(text) {
+            var message = new SpeechSynthesisUtterance();
+            message.text = text;
+            window.speechSynthesis.speak(message);
+        }
+    </script>
+
+</body>
+
+</html>
